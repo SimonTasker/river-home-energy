@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package control;
+
+service ControlAPI {
+    rpc GetPrediction(State) returns (Prediction) {}
+}
+
+message State {
+    double x = 1;
+}
+
+message Prediction {
+    double y = 1;
+}
