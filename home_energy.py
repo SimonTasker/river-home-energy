@@ -42,6 +42,7 @@ def read_config(config_file):
         raise Exception('Unable to read configuration file at ' + config_file)
     
     return config
+
 # ================================================
 # Main
 if __name__ == "__main__":

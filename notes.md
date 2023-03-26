@@ -1,3 +1,70 @@
+# Setting up Raspberry Pi
+
+## OS Installation
+
+> TODO
+
+## Mount USB Storage Drive
+
+> TODO
+
+# Setting up Docker
+
+## Installation
+
+```bash
+# Ensure Pi is up-to-date
+$ sudo apt update
+$ sudo apt upgrade
+# Run Docker install script
+$ curl -sSL https://get.docker.com | sh
+# Modify permissions (replace <pi-user> with main user)
+$ sudo usermode -aG docker <pi-user>
+# Reboot system
+$ sudo reboot
+
+# Check docker works correctly
+$ docker -v
+```
+
+## Change Docker's Storage Directory
+
+By default docker uses the `/var/lib/docker` directory as it's main storage directory for images etc.\
+This directory is part of the root filesystem of the Raspberry Pi, and so if the SD card used to install the OS on is quite small (e.g. 32GB) then the downloading and usage of docker images can saturate this drive quite quickly.
+
+As an alternative, we can bind mount this directory to a directory located on a mass storage device (see [Mount USB Storage Drive](#mount-usb-storage-drive)).
+
+To this, follow:
+
+```bash
+# Remove all running containers and all stored images
+$ docker rm -f $(docker ps -aq)
+$ docker rmi -f $(docker images -q)
+# Stop the running docker service
+$ sudo systemctl stop docker
+# Remove and re-create the /var/lib/docker directory
+$ sudo rm -rf /var/lib/docker
+$ sudo mkdir /var/lib/docker
+# Create the target folder to bind mount to
+$ sudo mkdir /mnt/data/docker
+# Create the mount
+$ sudo mount --rbind /mnt/data/docker /var/lib/docker
+```
+
+To make this permanent, we must also update `fstab`
+
+```bash
+$ sudo vim /etc/fstab
+
+# Add the following to the end of the file - and save
+/mnt/data/docker /var/lib/docker none rbind 0 0
+```
+
+Then restart the docker service
+```bash
+$ sudo systemctl start docker
+```
+
 # Setting up Tasmota Devices
 
 ## Configuring MQTT
@@ -241,3 +308,16 @@ To interact with the container:
 > docker exec -it river-test-1 /bin/bash
 ```
 This opens an interactive session with the running container and runs the bash terminal.
+
+# Setting up Home Assistant
+
+```bash
+docker run -d \
+  --name homeassistant \
+  --privileged \
+  --restart=unless-stopped \
+  -e TZ=Europe/London \
+  -v /mnt/data/homeassistant_config:/config \
+  --network=host \
+  ghcr.io/home-assistant/home-assistant:stable
+```
