@@ -34,25 +34,26 @@ log_format = logging.Formatter(fmt='%(asctime)s [%(name)s] - %(levelname)s - %(m
 
 # ================================================
 # Config Reader
-def read_config(data_dir, config_file):
+def read_config(config_file):
     config = ConfigParser()
-    path = data_dir+'/'+config_file
     try:
-        config.read_file(open(path))
+        config.read_file(open(config_file))
     except:
-        raise Exception('Unable to read configuration file at ' + path)
+        raise Exception('Unable to read configuration file at ' + config_file)
     
     return config
 # ================================================
 # Main
 if __name__ == "__main__":
+    # Pass CLAs
     args = parser.parse_args()
 
+    # Extract CLA values
     data_dir = args.data_dir
     config_file = args.configuration
 
     try:
-        config = read_config(args.data_dir, args.configuration)
+        config = read_config(config_file)
     except Exception as e:
         print(e)
         quit()

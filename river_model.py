@@ -33,6 +33,8 @@ class RiverModel:
             self.river_logger.info('Found and loading existing model')
             with open(self.model_file, 'rb') as f:
                 self.model = pickle.load(f)
+        else:
+            self.river_logger.info('No existing model found')
 
         self.y_trues = []
         self.y_preds = []
