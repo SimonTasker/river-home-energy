@@ -1,7 +1,9 @@
 # River imports
 from river import linear_model
 from river import preprocessing
+from river import optim
 from river import metrics
+from river 
 import pickle
 
 # Application imports
@@ -21,7 +23,11 @@ class RiverModel:
 
         # Default model parameters
         scale = preprocessing.StandardScaler()
-        learn = linear_model.LinearRegression()
+        learn = linear_model.LinearRegression(
+            intercept_lr=0,
+            optimizer=optim.SGD(lr=0.01))
+
+        
         self.model = scale | learn
 
         # Metrics
@@ -57,3 +63,15 @@ class RiverModel:
         # Update saved model
         with open(self.model_file, 'wb') as f:
             pickle.dump(self.model, f)
+
+    # ================================================
+    def predict_one(self, x):
+        return self.model.predict_one(x)
+    
+    # ================================================
+    def get_y_trues(self):
+        return self.y_trues
+    
+    # ================================================
+    def get_y_preds(self):
+        return self.y_preds

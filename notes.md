@@ -8,6 +8,35 @@
 
 > TODO
 
+```bash
+# List all block devices
+$ lsblk
+
+# Assuming that we have no other block devices attached, we would expect to see the mmcblk0 (with partitions) for the rootfs and sda (with single sda1 partition) as our USB.
+
+# The sda1 partition may by default be mounted to a user media directory, in that case before we can wipe with the new filesystem, we must first unmount it
+$ sudo umount /dev/sda1
+
+# Then we can create the new filesystem (leave all defaults when prompted)
+$ sudo mkfs.ext4 /dev/sda1
+
+# Make specific mounting point
+$ sudo mkdir /mnt/data
+
+# And mount the device
+$ sudo mount /dev/sda1 /mnt/data
+
+# Get the UUID of the device
+$ blkid /dev/sda1
+
+# Update the file system table to ensure the mounting persists
+$ sudo vim /etc/fstab
+
+# Add line to bottom of fstab file, replacing <ID> with UUID value from blkid
+UUID="<ID>" /mnt/data ext4 defaults,auto 0 0
+
+```
+
 # Setting up Docker
 
 ## Installation
@@ -65,38 +94,15 @@ Then restart the docker service
 $ sudo systemctl start docker
 ```
 
+# Starting Services
+
+Most auxiliary services have been pre-configured within a Docker Compose file, under `./services`.
+
+See [Services](./services/README.md).
+
 # Setting up Tasmota Devices
 
 ## Configuring MQTT
-
----
-### Setting up MQTT host on Raspberry Pi
----
-
-Install the Mosquitto Broker
-
-```bash
-$ sudo update install mosquitto
-# Check installation
-$ mosquitto -v
-# Enable service to start on boot
-$ sudo systemctl enable mosquitto.service
-# Check service is running
-$ sudo service mosquitto status
-```
-
-Update the Mosquitto configuration to allow for anonymous access (simply as convenience for testing)
-
-```bash
-$ sudo vim /etc/mosquitto/mosquitto.conf
-
-# Ensure these two lines are set to
-listener 1883
-allow_anonymous true
-
-# Then restart the service
-$ sudo systemctl restart mosquitto
-```
 
 ---
 ### Update Tasmota MQTT Configuration
@@ -124,7 +130,7 @@ TelePeriod 10
 Install NTP Server
 
 ```bash
-$ sudo update install ntp
+$ sudo apt install ntp
 # Check installation
 $ sntp --version
 sntp 4.2.8p15@1.3728-o Wed Sep 23 11:46:38 UTC 2020 (1)
@@ -248,6 +254,7 @@ Now that we have sufficient Memory capacity on the Pi, we can build the containe
 ```bash
 $ docker build --tag river-raspberrypi .
 ```
+> N.B. This process will take a while...!
 
 ---
 ### Cross-compiling
@@ -310,6 +317,8 @@ To interact with the container:
 This opens an interactive session with the running container and runs the bash terminal.
 
 # Setting up Home Assistant
+
+Run the following on the Raspberry Pi
 
 ```bash
 docker run -d \

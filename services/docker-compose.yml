@@ -1,0 +1,67 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    hostname: mosquitto
+    container_name: mosquitto
+    restart: always
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    networks:
+      - iot
+    volumes:
+      - ./mosquitto_config:/mosquitto/config
+
+  influxdb:
+    image: influxdb:2.7.1
+    hostname: influxdb
+    container_name: influxdb
+    restart: always
+    ports:
+      - "8086:8086"
+    networks:
+      - iot
+    volumes:
+      - influxdb-config:/etc/influxdb2
+      - influxdb-data:/var/lib/influxdb2
+      - ./influx_scripts:/docker-entrypoint-initdb.d
+    env_file:
+      - common.env
+      - influxdb.env
+
+  telegraf:
+    image: telegraf
+    hostname: telegraf
+    container_name: telegraf
+    restart: always
+    depends_on:
+      - mosquitto
+      - influxdb
+    networks:
+      - iot
+    volumes:
+      - ./telegraf_config/mqtt_telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    env_file:
+      - common.env
+
+  grafana:
+    image: grafana/grafana
+    hostname: grafana
+    container_name: grafana
+    restart: always
+    depends_on:
+      - influxdb
+    ports:
+      - "3000:3000"
+    networks:
+      - iot
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+networks:
+  iot:
+
+volumes:
+  influxdb-config:
+  influxdb-data:
+  grafana-data:

@@ -24,7 +24,7 @@ $ python -m grpc_tools.protoc -I ./protos --python_out=. --pyi_out=. --grpc_pyth
 ```
 
 ## Configuration
-Primarily the application is configured through a configuration file, which the application by default looks for within `/data/configuration.ini`.
+Primarily the application is configured through a configuration file, which the application by default looks for within `./configuration.ini`.
 
 The default configuration file can be automatically generated using the `generate_config.py` script.
 

@@ -76,9 +76,12 @@ if __name__ == "__main__":
     application_logger = logging.getLogger("Application")
     application_logger.info("Starting " + config['App Settings']['Name'])
 
+    # Instantiate River Model
     river_model = RiverModel(data_dir, config)
-    mqtt_trainer = MQTTRiverTrainer(config, river_model)
 
+    # Instantiate the Trainer
+    mqtt_trainer = MQTTRiverTrainer(config, river_model)
+    # Connect and start the trainer
     mqtt_trainer.connect_and_start()
 
     loop = asyncio.get_event_loop()
