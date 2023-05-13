@@ -16,6 +16,12 @@ config_file["River Settings"] = {
     "Model File":"kettle_predictor_model.pkl"
 }
 
+config_file["InfluxDB Settings"] = {
+    "Address":"http://raspberrypi.local:8086"
+    "Org":"HomeEnergy"
+    "Bucket":"Energy"
+}
+
 config_file["gRPC Settings"] = {
     "Address":"[::]:50051"
 }

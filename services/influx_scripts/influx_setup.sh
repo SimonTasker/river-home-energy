@@ -2,5 +2,5 @@
 set -e
 
 influx bucket create \
-  -n MQTT_Bucket \
+  -n ${INFLUX_BUCKET} \
   -d "Raw data bucket for MQTT data"

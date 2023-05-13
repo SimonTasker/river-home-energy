@@ -8,7 +8,7 @@ Specifically:
 - Telegraf (MQTT Listener)
 - Grafana
 
-All services are connected within a `iot` docker network.\
+All services are connected within docker network named `iot`.\
 Both `InfluxDB` and `Grafana` are configured with docker volumes for persistent storage.\
 The `mosquitto_config`, `telegraf_config` and `influx_scripts` folders are bind-mounted to each service appropriately.
 
@@ -23,7 +23,7 @@ The mosquitto service is configured as a simple, anonymous access, MQTT broker, 
 
 InfluxDB is a time-series database, which we shall use for storing data from our system.
 
-The service has environment variables and a set-up script that are configured to auto configure the database on first run, with the following initial values:
+The service has environment variables and a set-up script that are configured to auto configure the database on first set-up, with the initial values:
 
 - Default User: `admin`
 - Default Password: `adminadmin`
