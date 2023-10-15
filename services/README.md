@@ -6,10 +6,10 @@ Specifically:
 - Mosquitto Broker
 - Influx Database
 - Telegraf (MQTT Listener)
-- Grafana
+- Home Assistant
 
 All services are connected within docker network named `iot`.\
-Both `InfluxDB` and `Grafana` are configured with docker volumes for persistent storage.\
+Both `InfluxDB` and `Home Assistant` are configured with docker volumes for persistent storage.\
 The `mosquitto_config`, `telegraf_config` and `influx_scripts` folders are bind-mounted to each service appropriately.
 
 ## Details
@@ -64,8 +64,8 @@ Then simply:
 
 The following services will be then available:
 
-| Service     | Local Address         | Raspberry Pi Address          |
-| ----------- | --------------------- | ----------------------------- |
-| MQTT        | mqtt://localhost:1883 | mqtt://raspberrypi.local:1883 |
-| InfluxDB    | http://localhost:8086 | http://raspberrypi.local:8086 |
-| Grafana     | http://localhost:3000 | http://raspberrypi.local:3000 |
+| Service        | Local Address         | Raspberry Pi Address          |
+| -------------- | --------------------- | ----------------------------- |
+| MQTT           | mqtt://localhost:1883 | mqtt://raspberrypi.local:1883 |
+| InfluxDB       | http://localhost:8086 | http://raspberrypi.local:8086 |
+| Home Assistant | http://localhost:8123 | http://raspberrypi.local:8123 |

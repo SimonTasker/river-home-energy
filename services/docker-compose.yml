@@ -44,19 +44,15 @@ services:
     env_file:
       - common.env
 
-  grafana:
-    image: grafana/grafana
-    hostname: grafana
-    container_name: grafana
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
     restart: always
-    depends_on:
-      - influxdb
-    ports:
-      - "3000:3000"
-    networks:
-      - iot
+    privileged: true
+    network_mode: host
     volumes:
-      - grafana-data:/var/lib/grafana
+      - hass-data:/config
+      - /etc/localtime:/etc/localtime:ro
 
 networks:
   iot:
@@ -64,4 +60,4 @@ networks:
 volumes:
   influxdb-config:
   influxdb-data:
-  grafana-data:
+  hass-data:
