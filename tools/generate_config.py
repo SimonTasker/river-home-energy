@@ -17,8 +17,8 @@ config_file["River Settings"] = {
 }
 
 config_file["InfluxDB Settings"] = {
-    "Address":"http://raspberrypi.local:8086"
-    "Org":"HomeEnergy"
+    "Address":"http://raspberrypi.local:8086",
+    "Org":"HomeEnergy",
     "Bucket":"Energy"
 }
 
