@@ -26,8 +26,3 @@ def make_model(alpha):
     model = preprocessing.TargetStandardScaler(regressor=model)
 
     return model
-
-models = {
-    'center': make_model(0.5),
-    'upper': make_model(0.9)
-}

@@ -10,8 +10,11 @@ import matplotlib.pyplot as plt
 import pickle
 import datetime
 
-# Specify the file path where the pickled data is stored
-file_path = "/mnt/data/Documents/Dissertation/river-home-energy/test/output_5d.pkl"
+# Trains an river model - directly from pickled data
+
+# Pickled data
+#file_path = "./output_kettle_30d.pkl"
+file_path = "/Users/simontasker/Documents/MSc Software Engineering/Dissertation/Source/river-home-energy/tools/output_kettle_30d.pkl"
 
 # Load the pickled data from the file
 with open(file_path, "rb") as file:
@@ -20,6 +23,7 @@ with open(file_path, "rb") as file:
 # Unpickle the data
 output = pickle.loads(pickled_data)
 
+# Formats the JSON data into the x, y format required by the model
 def FormatData(data):
     _time = datetime.datetime.strptime(data['Time'], '%Y-%m-%dT%H:%M:%S')
     _data = data['ENERGY']
@@ -42,19 +46,19 @@ def FormatData(data):
 
 metric = metrics.MSE()
 
+# Creates the models, given the seleted daily nowcasting model
 models = {
     'center': make_model(0.5),
     'upper': make_model(0.9)
 }
 
+# Storage values
 x_vals = []
 y_trues = []
 y_preds = {
     'center': [],
     'upper': []
 }
-
-delta = datetime.timedelta(days=1)
 
 # Initial day predictions before actuals come in
 prev_x, prev_y = FormatData(output[0])
@@ -67,17 +71,26 @@ for val in output:
     # Format into acceptable format
     x, y = FormatData(val)
 
+    # Get offset between current and previous value
     offset = x.date() - prev_x.date()
 
+    # If we've crossed into the next day - update model
     if (offset.days > 0) :
+        # Next day, isn't the next sample (i.e. x)
+        # But is full day step (i.e. next time this model)
+        # Will be updated
+        next_x = prev_x + datetime.timedelta(days=1)
 
+        # Need to update each model
         for name, model in models.items():
             # Learn from last day
             model.learn_one(prev_x, prev_y)
             # Predict next day
-            y_preds[name].append(model.predict_one(x))
+            y_preds[name].append(model.predict_one(next_x))
 
-        metric.update(prev_y, y_preds['center'][-1])
+        # Update metrics (N.B. update from previous prediction - 
+        # not the one we just made, hence -2) 
+        metric.update(prev_y, y_preds['center'][-2])
 
         x_vals.append(prev_x.date())
         y_trues.append(prev_y)
@@ -85,39 +98,13 @@ for val in output:
     prev_x = x
     prev_y = y
 
-    #for name, model in models.items():
-    #    model.learn_one(x, y)
-    #    y_preds[name].append(model.predict_one(x))
-
-    # Update the error metric
-    #metric.update(y, y_preds['center'][-1])
-
-    # Store the true value and the prediction
-    #x_vals.append(count)
-    #y_trues.append(y)
-
-# Pickle the data
-# x_vals_pickled_data = pickle.dumps(x_vals)
-# y_trues_pickled_data = pickle.dumps(y_trues)
-# y_preds_pickled_data = pickle.dumps(y_preds)
-
-# # Save the pickled data to the file
-# with open('x_vals.pkl', "wb") as file:
-#     file.write(x_vals_pickled_data)
-
-# with open('y_trues.pkl', "wb") as file:
-#     file.write(y_trues_pickled_data)
-
-# with open('y_preds.pkl', "wb") as file:
-#     file.write(y_preds_pickled_data)
-
-y_preds['center'].pop()
-y_preds['upper'].pop()
+next_day = prev_x + datetime.timedelta(days=1)
+x_vals.append(next_day.date())
+y_trues.append(0)
 
 fig, ax = plt.subplots(figsize=(10, 6))
 ax.grid(alpha=0.75)
 ax.plot(x_vals, y_trues, linestyle='--', marker='x', lw=1, color='#2ecc71', alpha=1, label='Ground truth')
-# ax.plot(dates, y_preds['center'], linestyle='--', marker='o', lw=3, color='#e74c3c', alpha=0.8, label='Prediction')
 ax.fill_between(x_vals, y_preds['center'], y_preds['upper'], color='#e74c3c', alpha=0.3, label='Prediction interval')
 
 # Loop through the points and add circles with dynamically calculated radius
@@ -127,5 +114,4 @@ for date, y_true, y_pred in zip(x_vals, y_trues, y_preds['upper']):
 
 ax.legend()
 ax.set_title(metric)
-# plt.ylim(0,5)
 plt.show()
