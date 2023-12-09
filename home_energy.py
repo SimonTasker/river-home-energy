@@ -5,8 +5,10 @@ import logging
 import sys
 import asyncio
 
-from mqtt_river_trainer import MQTTRiverTrainer 
+from mediator import Mediator
+from mqtt_client import MQTTClient 
 from river_model import RiverModel
+from mediator import Mediator
 
 # ================================================
 # Application Arguments
@@ -78,16 +80,20 @@ if __name__ == "__main__":
 
     # Instantiate River Model
     river_model = RiverModel(data_dir, config)
-
     # Instantiate the Trainer
-    mqtt_trainer = MQTTRiverTrainer(config, river_model)
-    # Connect and start the trainer
-    mqtt_trainer.connect_and_start()
+    mqtt_client = MQTTClient(config)
+    # Instantiate the Mediator
+    mediator = Mediator(river_model, mqtt_client)
 
+    # Connect and start the MQTT Client
+    mqtt_client.connect_and_start()
+
+    # Get event loop
     loop = asyncio.get_event_loop()
 
+    # Start application until stopped
     try:
         loop.run_forever()
     finally:
-        mqtt_trainer.stop()
+        mqtt_client.stop()
         loop.close()

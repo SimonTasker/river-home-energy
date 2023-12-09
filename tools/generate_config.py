@@ -9,7 +9,8 @@ config_file["App Settings"] = {
 config_file["MQTT Settings"] = {
     "Address":"raspberrypi.local",
     "Port":1883,
-    "Topic":"tele/Tasmota_Kettle/SENSOR"
+    "Listen Topic":"tele/Tasmota_Kettle/SENSOR",
+    "Publish Topic":"river/Tasmota_Kettle_Predictions"
 }
 
 config_file["River Settings"] = {

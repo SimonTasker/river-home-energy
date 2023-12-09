@@ -1,17 +1,18 @@
 # MQTT Imports
 import paho.mqtt.client as mqtt
-from datetime import datetime
 import json
 
 # Application imports
 import logging
+import datetime
+from mediator import MediatedComponent
 
 # ================================================
-class MQTTRiverTrainer:
+class MQTTClient(MediatedComponent):
     # ================================================
     # Class Constructor
-    def __init__(self, config, river_model):
-        self.river_model = river_model
+    def __init__(self, config):
+        MediatedComponent.__init__(self)
 
         # Define loggers
         self.mqtt_logger = logging.getLogger('MQTT')
@@ -27,7 +28,8 @@ class MQTTRiverTrainer:
         # Read mqtt config items
         self.mqtt_address = config["MQTT Settings"]["Address"]
         self.mqtt_port = int(config["MQTT Settings"]["Port"])
-        self.mqtt_subscription = config["MQTT Settings"]["Topic"]
+        self.mqtt_subscription = config["MQTT Settings"]["Listen Topic"]
+        self.mqtt_publish_topic = config["MQTT Settings"]["Publish Topic"]
 
     # ================================================
     # Callback from MQTT connection attempt
@@ -49,15 +51,26 @@ class MQTTRiverTrainer:
 
         self.mqtt_logger.debug("Received message: " + str(json_payload))
 
-        # Format: yyyy-mm-ddTHH:MM:SS
-        dt = datetime.strptime(json_payload["Time"], '%Y-%m-%dT%H:%M:%S')
-        # Custom x values - derived from message payload
-        x = { 'epoch' : dt.timestamp() }
-        # Require y
-        y = json_payload["ENERGY"]["Power"]
+        # Notify Mediator of new message
+        self.mediator.notify_mqtt_message(json_payload)
 
-        # train model on payload data
-        self.river_model.train(x, y)
+    # ================================================
+    def publish_prediction(self, x: datetime.datetime, name, y):
+        # Format prediction into desired format
+        data = {
+            "Time": x.strftime("%Y-%m-%dT%H:%M:%S"),
+            "Prediction": y
+        }
+        # Dump json into str
+        json_data = json.dumps(data)
+
+        # Append topic with model name
+        topic = self.mqtt_publish_topic + "/" + name
+
+        self.mqtt_logger.info("Publishing " + str(json_data) + " to " + topic)
+
+        # Publish prediction
+        self.client.publish(topic, json_data)
 
     # ================================================
     def connect_and_start(self):

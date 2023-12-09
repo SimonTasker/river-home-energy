@@ -6,7 +6,7 @@ import time
 # Re-publish back to the MQTT broker, to allow for testing on historic data
 
 # Pickled data
-file_path = "./output_kettle_30d.pkl"
+file_path = "/Users/simontasker/Documents/MSc Software Engineering/Dissertation/Source/river-home-energy/tools/output_kettle_30d.pkl"
 # MQTT settings
 broker = "raspberrypi.local"
 port = 1883
@@ -43,7 +43,8 @@ def run():
     # Publish all data
     for val in output:
         # N.B. without sleep, will publish as fast as possible
-        # time.sleep(0.01)
+        time.sleep(0.00115741) # Publish at rate of 1 day every 10 seconds
+        # string quotes need to be " as opposed to '
         publish(client, str(val).replace("'", '"'))
 
 if __name__ == '__main__':
