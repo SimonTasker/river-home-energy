@@ -4,6 +4,7 @@ from configparser import ConfigParser
 import logging
 import sys
 import asyncio
+import json
 
 from mediator import Mediator
 from mqtt_client import MQTTClient 
@@ -46,6 +47,15 @@ def read_config(config_file):
     return config
 
 # ================================================
+# Config Logger
+def print_config(config, logger):
+    # Pretty-print the contents to the logger
+    for section in config.sections():
+        logger.info(f"   {section}")
+        for key, value in config.items(section):
+            logger.info(f"      {key} = {value}")
+
+# ================================================
 # Main
 if __name__ == "__main__":
     # Pass CLAs
@@ -74,8 +84,13 @@ if __name__ == "__main__":
     console_handler.setFormatter(log_format)
     root_logger.addHandler(console_handler)
 
+    config.values
+
     # Create "Application" level logger
     application_logger = logging.getLogger("Application")
+    # First print the application configuration
+    application_logger.info("Application config: ")
+    print_config(config, application_logger)
     application_logger.info("Starting " + config['App Settings']['Name'])
 
     # Instantiate River Model
