@@ -43,7 +43,7 @@ class MQTTClient(MediatedComponent):
             self.mqtt_logger.critical("Failed to connect, rc: %s", rc)
 
     # ================================================
-    # Callback from MQTT connection attempt
+    # Callback from MQTT when message is received
     def on_message(self, client, userdata, message):
         # unpack message payload into json
         payload = message.payload.decode("utf-8")

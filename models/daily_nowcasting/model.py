@@ -17,12 +17,17 @@ def make_model(alpha):
     scale = preprocessing.StandardScaler()
 
     learn = linear_model.LinearRegression(
-        intercept_lr=0.3,
-        optimizer=optim.SGD(0.005),
-        loss=optim.losses.Quantile(alpha=alpha)
+        optimizer=optim.Adam(
+            lr=.01,
+            beta_1=.9,
+            beta_2=.99
+        ),
+        loss=optim.losses.Quantile(alpha=alpha),
+        l1=.1,
+        intercept_lr=.01,
+        initializer=optim.initializers.Zeros()
     )
 
     model = features | scale | learn
-    model = preprocessing.TargetStandardScaler(regressor=model)
-
+    
     return model
