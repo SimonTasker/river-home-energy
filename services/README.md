@@ -13,7 +13,6 @@ Both `InfluxDB` and `Home Assistant` are configured with docker volumes for pers
 The `mosquitto_config`, `telegraf_config` and `influx_scripts` folders are bind-mounted to each service appropriately.
 
 ## Details
----
 
 ### Mosquitto
 

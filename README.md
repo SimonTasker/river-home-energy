@@ -12,6 +12,14 @@ TODO: A GRPC interface is in development to allow API control of the machine lea
 
 # Getting Started
 
+An example predictor running on a Raspberry Pi, being use to predict kettle usage, can be found [here](https://github.com/SimonTasker/kettle-predictor)
+
+## Services
+
+The application is designed to be run as part of a group of other services, which include an MQTT Broker; an InfluxDB database; and an instance of HomeAssistant.
+
+[Read here for further details](./services/README.md)
+
 ## Configuration
 Primarily the application is configured through a configuration file, which the application by default looks for within `./configuration.ini`.
 
@@ -34,8 +42,6 @@ optional arguments:
 ```
 
 The only purpose of the CLI is to change the primary configuration file, and to set the data directory the application will use to read the configuration file from and output log files to.
-
-An example predictor running on a Raspberry Pi, being use to predict kettle usage, can be found [here](https://github.com/SimonTasker/kettle-predictor)
 
 ## Logging
 The Application provides two logging interfaces. Console and File.\
