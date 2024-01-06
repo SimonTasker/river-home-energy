@@ -35,6 +35,8 @@ optional arguments:
 
 The only purpose of the CLI is to change the primary configuration file, and to set the data directory the application will use to read the configuration file from and output log files to.
 
+An example predictor running on a Raspberry Pi, being use to predict kettle usage, can be found [here](https://github.com/SimonTasker/kettle-predictor)
+
 ## Logging
 The Application provides two logging interfaces. Console and File.\
 INFO level logging will be printed to the console.\

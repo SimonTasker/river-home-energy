@@ -31,7 +31,7 @@ class RiverModel(MediatedComponent):
         # Models
         self.models = {
             'center': make_model(0.5),
-            'upper': make_model(0.9)
+            'upper': make_model(0.95)
         }
 
         self.river_logger.info('Looking for existing model at ' + self.model_file)
